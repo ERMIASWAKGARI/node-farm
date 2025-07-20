@@ -1,5 +1,6 @@
 const fs = require('fs');
 const http = require('http');
+const url = require('url');
 
 /////////////////////// File System Module
 
@@ -37,8 +38,19 @@ const http = require('http');
 
 /////////////////////// HTTP Module
 const server = http.createServer((req, res) => {
-  res.writeHead(200, { 'Content-Type': 'text/html' });
-  res.end('<h1>Hello from the server!</h1>');
+  const pathName = req.url;
+
+  if (pathName === '/' || pathName === '/overview') {
+    res.end('<h1>This is the OVERVIEW</h1>');
+  } else if (pathName === '/product') {
+    res.end('<h1>This is the PRODUCT</h1>');
+  } else {
+    res.writeHead(404, {
+      'Content-Type': 'text/html',
+      'Custom-Header': 'Hello World',
+    });
+    res.end('<h1>Page not found</h1>');
+  }
 });
 
 server.listen(5000, '127.0.0.1', () => {
