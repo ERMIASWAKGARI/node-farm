@@ -37,6 +37,10 @@ const url = require('url');
 // console.log('Reading file...');
 
 /////////////////////// HTTP Module
+
+const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, 'utf-8');
+const dataObj = JSON.parse(data);
+
 const server = http.createServer((req, res) => {
   const pathName = req.url;
 
@@ -44,6 +48,11 @@ const server = http.createServer((req, res) => {
     res.end('<h1>This is the OVERVIEW</h1>');
   } else if (pathName === '/product') {
     res.end('<h1>This is the PRODUCT</h1>');
+  } else if (pathName === '/api') {
+    res.writeHead(200, {
+      'Content-Type': 'application/json',
+    });
+    res.end(data);
   } else {
     res.writeHead(404, {
       'Content-Type': 'text/html',
