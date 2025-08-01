@@ -1,6 +1,6 @@
-const fs = require('fs');
-const http = require('http');
-const url = require('url');
+const fs = require("fs");
+const http = require("http");
+const url = require("url");
 
 /////////////////////// File System Module
 
@@ -40,17 +40,17 @@ const url = require('url');
 
 const tempOverview = fs.readFileSync(
   `${__dirname}/templates/template-overview.html`,
-  'utf-8'
+  "utf-8"
 );
 const tempCard = fs.readFileSync(
   `${__dirname}/templates/template-card.html`,
-  'utf-8'
+  "utf-8"
 );
 const tempProduct = fs.readFileSync(
   `${__dirname}/templates/template-product.html`,
-  'utf-8'
+  "utf-8"
 );
-const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, 'utf-8');
+const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, "utf-8");
 const dataObj = JSON.parse(data);
 
 const replaceTemplate = (temp, product) => {
@@ -63,47 +63,48 @@ const replaceTemplate = (temp, product) => {
   output = output.replace(/{%DESCRIPTION%}/g, product.description);
   output = output.replace(/{%ID%}/g, product.id);
   if (!product.organic) {
-    output = output.replace(/{%NOT_ORGANIC%}/g, 'not-organic');
+    output = output.replace(/{%NOT_ORGANIC%}/g, "not-organic");
   }
   return output;
 };
 
 const server = http.createServer((req, res) => {
-  const pathName = req.url;
-
+  const { query, pathname } = url.parse(req.url, true);
+  console.log(url.parse(req.url, true));
   //overview page
-  if (pathName === '/' || pathName === '/overview') {
+  if (pathname === "/" || pathname === "/overview") {
     res.writeHead(200, {
-      'Content-Type': 'text/html',
+      "Content-Type": "text/html",
     });
 
     const cardsHtml = dataObj
       .map((el) => replaceTemplate(tempCard, el))
-      .join('');
+      .join("");
     const output = tempOverview.replace(/{%PRODUCT_CARDS%}/g, cardsHtml);
     res.end(output);
 
     //product page
-  } else if (pathName === '/product') {
-    res.end('<h1>This is the PRODUCT</h1>');
+  } else if (pathname === "/product") {
+    console.log(query);
+    res.end("<h1>This is the PRODUCT</h1>");
 
     //API
-  } else if (pathName === '/api') {
+  } else if (pathname === "/api") {
     res.writeHead(200, {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     });
     res.end(data);
 
     // Not Found
   } else {
     res.writeHead(404, {
-      'Content-Type': 'text/html',
-      'Custom-Header': 'Hello World',
+      "Content-Type": "text/html",
+      "Custom-Header": "Hello World",
     });
-    res.end('<h1>Page not found</h1>');
+    res.end("<h1>Page not found</h1>");
   }
 });
 
-server.listen(5000, '127.0.0.1', () => {
-  console.log('Server is running on port 5000...');
+server.listen(5000, "127.0.0.1", () => {
+  console.log("Server is running on port 5000...");
 });
